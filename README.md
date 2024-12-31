@@ -2,7 +2,7 @@
 
 - A dynamic web animation that plays a special outro when counting down to specific times.
 - Drops the Xenogenesis - TheFatRat outro song's beat drop at exactly midnight.
-- [Basically this but automated](https://www.youtube.com/watch?v=uWhFyfK8zKw)
+- [Basically this but automated =D ](https://www.youtube.com/watch?v=uWhFyfK8zKw)
 
 ## Features
 

@@ -1,7 +1,7 @@
 const SPRITE_PATHS = {
   sky: '/sprites/sky.png',
   clouds: '/sprites/far-clouds.png',
-  nearClouds: '/sprites/near-clouds.png', 
+  nearClouds: '/sprites/near-clouds.png',
   mountains: '/sprites/mountains.png',
   farMountains: '/sprites/far-mountains.png',
   trees: '/sprites/trees.png'
@@ -17,31 +17,31 @@ class Game {
     this.canvas = document.createElement('canvas');
     this.ctx = this.canvas.getContext('2d');
     document.body.appendChild(this.canvas);
-    
+
     this.sprites = {};
     this.audio = {};
     this.isOutro = false;
     this.isLoading = true;
     this.loadingProgress = 0;
     this.showInstructions = true;
-    
+
     // Load Google Font
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = 'https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap';
     document.head.appendChild(link);
-    
+
     this.resize();
     this.loadAssets();
     this.setupTimeSync();
-    
+
     window.addEventListener('resize', () => this.resize());
     window.addEventListener('click', () => {
       if (this.isLoading) return;
       this.showInstructions = false;
       this.toggleMusic();
     });
-    
+
     requestAnimationFrame(() => this.gameLoop());
 
     this.settings = {
@@ -97,10 +97,14 @@ class Game {
 
   async setupTimeSync() {
     try {
-      //TODO http tomfoolery
-      const response = await fetch('https://corsproxy.io/?url=https://worldtimeapi.org/api/ip');
-      const data = await response.json();
-      const serverTime = new Date(data.utc_datetime);
+      const response = await fetch('https://wtfismyip.com/text');
+      const ip = await response.text();
+      const timeResponse = await fetch(`https://timeapi.io/api/time/current/ip?ipAddress=${ip}`, {
+        method: 'GET',
+        cache: 'no-cache'
+      });
+      const data = await timeResponse.json();
+      const serverTime = new Date(data.year, data.month - 1, data.day, data.hour, data.minute, data.seconds);
       this.timeOffset = serverTime - new Date();
     } catch (error) {
       console.error('Time sync failed:', error);
@@ -130,7 +134,7 @@ class Game {
   drawLoadingScreen() {
     this.ctx.fillStyle = '#000';
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    
+
     const barWidth = this.canvas.width * 0.8;
     const barHeight = 10;
     const x = (this.canvas.width - barWidth) / 2;
@@ -166,7 +170,7 @@ class Game {
     }
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    
+
     this.drawLayer('sky', 320);
     this.drawLayer('clouds', 128);
     this.drawLayer('nearClouds', 144);
@@ -224,7 +228,7 @@ class Game {
     now.setTime(now.getTime() + this.timeOffset);
     console.log(now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds());
     let shouldDrop = false;
-    switch(this.settings.dropTiming) {
+    switch (this.settings.dropTiming) {
       case 'minute':
         shouldDrop = now.getSeconds() === 2;
         break;
@@ -232,9 +236,9 @@ class Game {
         shouldDrop = now.getMinutes() === 59 && now.getSeconds() === 2;
         break;
       case 'year':
-        shouldDrop = now.getMonth() === 11 && now.getDate() === 31 && 
-                    now.getHours() === 23 && now.getMinutes() === 59 && 
-                    now.getSeconds() === 2 ;
+        shouldDrop = now.getMonth() === 11 && now.getDate() === 31 &&
+          now.getHours() === 23 && now.getMinutes() === 59 &&
+          now.getSeconds() === 2;
         break;
     }
 

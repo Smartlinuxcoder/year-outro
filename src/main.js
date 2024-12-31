@@ -97,14 +97,23 @@ class Game {
 
   async setupTimeSync() {
     try {
+      const requestStart = Date.now();
       const response = await fetch('https://wtfismyip.com/text');
       const ip = await response.text();
       const timeResponse = await fetch(`https://timeapi.io/api/time/current/ip?ipAddress=${ip}`, {
         method: 'GET',
         cache: 'no-cache'
       });
+      const requestEnd = Date.now();
       const data = await timeResponse.json();
+      
+      // Calculate round trip
+      const rtt = requestEnd - requestStart;
+      const networkDelay = Math.floor(rtt / 2);
+      
       const serverTime = new Date(data.year, data.month - 1, data.day, data.hour, data.minute, data.seconds);
+      serverTime.setMilliseconds(networkDelay); // Add half RTT to compensate
+      
       this.timeOffset = serverTime - new Date();
     } catch (error) {
       console.error('Time sync failed:', error);
@@ -241,7 +250,7 @@ class Game {
           now.getSeconds() === 2;
         break;
     }
-
+    
     if (shouldDrop && !this.isOutro) {
       console.log('shouldDrop', shouldDrop);
       this.stopMusic();

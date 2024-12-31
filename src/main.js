@@ -98,7 +98,7 @@ class Game {
   async setupTimeSync() {
     try {
       //TODO http tomfoolery
-      const response = await fetch('https://worldtimeapi.org/api/ip');
+      const response = await fetch('https://corsproxy.io/?url=https://worldtimeapi.org/api/ip');
       const data = await response.json();
       const serverTime = new Date(data.utc_datetime);
       this.timeOffset = serverTime - new Date();

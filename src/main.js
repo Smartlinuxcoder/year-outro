@@ -110,9 +110,9 @@ class Game {
       // Calculate round trip
       const rtt = requestEnd - requestStart;
       const networkDelay = Math.floor(rtt / 2);
-      
+      console.log(networkDelay);
       const serverTime = new Date(data.year, data.month - 1, data.day, data.hour, data.minute, data.seconds);
-      serverTime.setMilliseconds(networkDelay); // Add half RTT to compensate
+      serverTime.setMilliseconds(serverTime.getMilliseconds() + networkDelay); // Add half RTT to compensate
       
       this.timeOffset = serverTime - new Date();
     } catch (error) {
